@@ -84,6 +84,7 @@ public class WebSecurityConfig {
 						.requestMatchers("/api/v1/teams/**").hasRole("MANAGER")
 						.requestMatchers("/api/v1/users/cities").hasRole("MANAGER")
 						.requestMatchers("/api/v1/reports/**").hasRole("CXO")
+						.requestMatchers("/api/v1/ai/**").hasRole("CUSTOMER")
 
 						.anyRequest().authenticated()
 				)

@@ -70,4 +70,11 @@ public class TicketService {
     public List<Team> getAllTeams() {
         return teamRepo.findAll();
     }
+
+    @Transactional(readOnly = true)
+    public TicketDetailDto getTicketByUid(String ticketUid) {
+        Ticket ticket = ticketRepo.findByTicketUid(ticketUid)
+                .orElseThrow(() -> new TicketNotFoundException("Ticket not found with ID: " + ticketUid));
+        return mapTicketToDetailDto(ticket); // Use our existing central mapper
+    }
 }
