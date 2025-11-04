@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TicketRepo extends JpaRepository<Ticket, Long>, JpaSpecificationExecutor<Ticket> {
@@ -65,4 +66,6 @@ public interface TicketRepo extends JpaRepository<Ticket, Long>, JpaSpecificatio
             "FROM Ticket t " +
             "WHERE t.resolvedAt IS NOT NULL AND t.createdAt >= :startDate")
     Double getAverageResolutionTimeInHours(@Param("startDate") LocalDateTime startDate);
+
+    Optional<Ticket> findByTicketUid(String ticketUid);
 }
