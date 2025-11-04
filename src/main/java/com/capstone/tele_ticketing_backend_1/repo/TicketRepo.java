@@ -3,6 +3,7 @@ package com.capstone.tele_ticketing_backend_1.repo;
 import com.capstone.tele_ticketing_backend_1.entities.AppUser;
 import com.capstone.tele_ticketing_backend_1.entities.Ticket;
 import com.capstone.tele_ticketing_backend_1.entities.TicketStatus;
+import com.capstone.tele_ticketing_backend_1.projections.TicketVolumeProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -52,5 +53,16 @@ public interface TicketRepo extends JpaRepository<Ticket, Long>, JpaSpecificatio
     @Query("SELECT DISTINCT t FROM Ticket t JOIN t.assignedTo a WHERE a.team.id = :teamId AND t.status NOT IN ('RESOLVED', 'FIXED') AND t.slaBreachAt BETWEEN :now AND :slaRiskThreshold")
     List<Ticket> findSlaRiskTicketsByTeam(@Param("teamId") Long teamId, @Param("now") LocalDateTime now, @Param("slaRiskThreshold") LocalDateTime slaRiskThreshold);
 
+    @Query("SELECT FUNCTION('DATE', t.createdAt) as date, COUNT(t) as count " +
+            "FROM Ticket t " +
+            "WHERE t.createdAt >= :startDate " +
+            "GROUP BY FUNCTION('DATE', t.createdAt) " +
+            "ORDER BY date ASC")
+    List<TicketVolumeProjection> getTicketVolumeByDay(@Param("startDate") LocalDateTime startDate);
 
+    // Dr. X's Fix: We extract the epoch from each timestamp first, then subtract.
+    @Query("SELECT AVG((EXTRACT(EPOCH FROM t.resolvedAt) - EXTRACT(EPOCH FROM t.createdAt)) / 3600.0) " +
+            "FROM Ticket t " +
+            "WHERE t.resolvedAt IS NOT NULL AND t.createdAt >= :startDate")
+    Double getAverageResolutionTimeInHours(@Param("startDate") LocalDateTime startDate);
 }
