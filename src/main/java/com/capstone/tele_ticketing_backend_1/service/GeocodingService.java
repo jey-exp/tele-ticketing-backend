@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Service
 @SuppressWarnings("java:S1172")
-public class GeocodingService {
+public class GeocodingService implements GeocodingServiceInterface {
 
     /**
      * Converts address components into geographic coordinates.

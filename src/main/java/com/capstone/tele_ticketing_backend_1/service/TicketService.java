@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TicketService {
+public class TicketService  implements TicketServiceInterface{
 
     private final TicketRepo ticketRepo;
     private final TeamRepo teamRepo;

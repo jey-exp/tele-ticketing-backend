@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerTicketService {
+public class CustomerTicketService implements CustomerTicketServiceInterface {
 
-    private final static String noUser = "User not found";
     private final TicketRepo ticketRepo;
     private final UserRepo userRepo;
     private final TicketService ticketService;
@@ -31,7 +31,7 @@ public class CustomerTicketService {
     @Transactional
     public TicketDetailDto createTicket(CreateTicketRequestDto dto, String username) {
         AppUser user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(noUser + username));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
 
         Ticket ticket = new Ticket();
         ticket.setTitle(dto.getTitle());
@@ -62,7 +62,7 @@ public class CustomerTicketService {
     @Transactional
     public TicketDetailDto addFeedback(Long ticketId, FeedbackRequestDto dto, String username) {
         AppUser user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(noUser + username));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
 
         Ticket ticket = ticketRepo.findById(ticketId)
                 .orElseThrow(() -> new TicketNotFoundException("Ticket not found with id: " + ticketId));
@@ -99,7 +99,7 @@ public class CustomerTicketService {
 
     public List<TicketSummaryDto> getCustomerActiveTickets(String username) {
         AppUser user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(noUser + username));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
 
         List<TicketStatus> activeStatuses = Arrays.asList(
                 TicketStatus.CREATED,
@@ -114,24 +114,24 @@ public class CustomerTicketService {
         // Dr. X's Note: Map entities to DTOs to control what data is exposed to the client.
         return tickets.stream()
                 .map(ticket -> new TicketSummaryDto(ticket.getId(), ticket.getTicketUid(), ticket.getTitle(), ticket.getStatus(), ticket.getCreatedAt()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<TicketSummaryDto> getCustomerFeedbackTickets(String username) {
         AppUser user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(noUser + username));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
 
         List<Ticket> tickets = ticketRepo.findAllByCreatedForAndStatus(user, TicketStatus.FIXED);
 
         return tickets.stream()
                 .map(ticket -> new TicketSummaryDto(ticket.getId(), ticket.getTicketUid(), ticket.getTitle(), ticket.getStatus(), ticket.getCreatedAt()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<NotificationDto> getNotifications(String username) {
         AppUser user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(noUser + username));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
 
         List<TicketActivity> activities = activityRepo.findAllByTicket_CreatedForAndInternalOnlyFalseOrderByCreatedAtDesc(user);
 
@@ -144,6 +144,6 @@ public class CustomerTicketService {
                         activity.getActivityType().name(),
                         activity.getCreatedAt()
                 ))
-                .toList();
+                .collect(Collectors.toList());
     }
 }

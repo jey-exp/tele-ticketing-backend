@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 
-public class AgentTicketService {
+public class AgentTicketService implements AgentTicketServiceInterface {
 
     private final static String noAgent = "Agent not found";
 

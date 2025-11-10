@@ -1,5 +1,6 @@
 package com.capstone.tele_ticketing_backend_1.service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserService {
+public class UserService implements UserServiceInterface {
 
     private final UserRepo userRepo;
 
@@ -45,7 +46,7 @@ public class UserService {
     private List<UserSummaryDto> mapUsersToSummaryDto(List<AppUser> users) {
         return users.stream()
                 .map(user -> new UserSummaryDto(user.getId(), user.getUsername(), user.getFullName()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<UserSummaryDto> getUnassignedEngineers() {

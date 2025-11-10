@@ -36,9 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TeamLeadService {
-
-    private final static String noTL = "Team lead not found";
+public class TeamLeadService implements TeamLeadServiceInterface {
 
     private final UserRepo userRepo;
     private final TeamRepo teamRepo;
@@ -53,7 +51,7 @@ public class TeamLeadService {
         List<TicketStatus> activeStatuses = List.of(TicketStatus.ASSIGNED, TicketStatus.IN_PROGRESS);
         List<Ticket> tickets = ticketRepo.findTicketsByTeamAndStatus(team.getId(), activeStatuses);
         log.debug("Found {} active tickets for team: {}", tickets.size(), team.getName());
-        return tickets.stream().map(this::mapTicketToSummaryDto).toList();
+        return tickets.stream().map(this::mapTicketToSummaryDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +62,7 @@ public class TeamLeadService {
         LocalDateTime twoHoursFromNow = now.plusHours(2);
         List<Ticket> tickets = ticketRepo.findSlaRiskTicketsByTeam(team.getId(), now, twoHoursFromNow);
         log.warn("Found {} SLA risk tickets for team: {}", tickets.size(), team.getName());
-        return tickets.stream().map(this::mapTicketToSummaryDto).toList();
+        return tickets.stream().map(this::mapTicketToSummaryDto).collect(Collectors.toList());
     }
 
     @Transactional
@@ -119,7 +117,7 @@ public class TeamLeadService {
     }
 
     private Team findTeamByLead(String username) {
-        AppUser teamLead = userRepo.findByUsername(username).orElseThrow(() -> new UserNotFoundException(noTL));
+        AppUser teamLead = userRepo.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Team Lead not found"));
         Team team = teamRepo.findByTeamLead(teamLead).orElseThrow(() -> new BadRequestException("You are not registered as a lead of any team."));
         return team;
     }
@@ -133,12 +131,12 @@ public class TeamLeadService {
         Team team = findTeamByLead(teamLeadUsername);
         return team.getMembers().stream()
                 .map(member -> new UserSummaryDto(member.getId(), member.getUsername(), member.getFullName()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public TeamDetailDto getTeamDetails(String teamLeadUsername) {
-        AppUser teamLead = userRepo.findByUsername(teamLeadUsername).orElseThrow(() -> new UserNotFoundException(noTL));
+        AppUser teamLead = userRepo.findByUsername(teamLeadUsername).orElseThrow(() -> new UserNotFoundException("Team Lead not found"));
         // This will throw if no team is found, which we'll handle on the frontend.
         Team team = teamRepo.findByTeamLead(teamLead).orElseThrow(() -> new ResourceNotFoundException("Team not found for the current user."));
 
@@ -148,7 +146,7 @@ public class TeamLeadService {
     @Transactional
     public TeamDetailDto updateTeam(TeamMemberUpdateRequestDto dto, String teamLeadUsername) {
         AppUser teamLead = userRepo.findByUsername(teamLeadUsername)
-                .orElseThrow(() -> new UserNotFoundException(noTL));
+                .orElseThrow(() -> new UserNotFoundException("Team Lead not found"));
 
         // Find existing team or create a new one if adding members for the first time.
         Team team = teamRepo.findByTeamLead(teamLead).orElseGet(() -> {

@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TriageOfficerService {
+public class TriageOfficerService implements TriageOfficerServiceInterface {
 
     private final TicketRepo ticketRepo;
     private final UserRepo userRepo;
@@ -46,7 +46,7 @@ public class TriageOfficerService {
         List<Ticket> tickets = ticketRepo.findAllByStatusIn(PENDING_STATUSES);
         return tickets.stream()
                 .map(ticket -> new TicketSummaryDto(ticket.getId(), ticket.getTicketUid(), ticket.getTitle(), ticket.getStatus(), ticket.getCreatedAt()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -180,7 +180,7 @@ public class TriageOfficerService {
 
         return activities.stream()
                 .map(this::mapActivityToNotificationDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private NotificationDto mapActivityToNotificationDto(TicketActivity activity) {

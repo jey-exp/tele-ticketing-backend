@@ -2,6 +2,7 @@ package com.capstone.tele_ticketing_backend_1.service;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ManagerService {
+public class ManagerService implements ManagerServiceInterface {
 
     private final TicketRepo ticketRepo;
 
@@ -48,6 +49,6 @@ public class ManagerService {
                 .map(ticket -> new TicketSummaryDto(
                         ticket.getId(), ticket.getTicketUid(), ticket.getTitle(),
                         ticket.getStatus(), ticket.getCreatedAt()))
-                .toList();
+                .collect(Collectors.toList());
     }
 }

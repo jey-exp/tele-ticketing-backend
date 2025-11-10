@@ -4,6 +4,7 @@ package com.capstone.tele_ticketing_backend_1.service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ReportingService {
+public class ReportingService implements ReportingServiceInterface {
 
     private final TicketRepo ticketRepo;
     private final FeedbackRepo feedbackRepo;
@@ -38,7 +39,7 @@ public class ReportingService {
                         p.getDate().format(formatter),
                         p.getCount()
                 ))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public AverageResolutionTimeDto getAverageResolutionTimeReport() {
@@ -53,6 +54,6 @@ public class ReportingService {
                         p.getRating(),
                         p.getCount()
                 ))
-                .toList();
+                .collect(Collectors.toList());
     }
 }

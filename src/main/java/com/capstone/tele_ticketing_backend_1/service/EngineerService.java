@@ -1,6 +1,7 @@
 package com.capstone.tele_ticketing_backend_1.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capstone.tele_ticketing_backend_1.dto.EngineerUpdateDto;
 import com.capstone.tele_ticketing_backend_1.dto.TicketDetailDto;
 import com.capstone.tele_ticketing_backend_1.dto.TicketSummaryDto;
+import com.capstone.tele_ticketing_backend_1.dto.UserSummaryDto;
 import com.capstone.tele_ticketing_backend_1.entities.ActivityType;
 import com.capstone.tele_ticketing_backend_1.entities.AppUser;
 import com.capstone.tele_ticketing_backend_1.entities.Ticket;
@@ -22,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class EngineerService {
+public class EngineerService implements EngineerServiceInterface {
 
     private final TicketRepo ticketRepo;
     private final UserRepo userRepo;
@@ -39,7 +41,7 @@ public class EngineerService {
 
         return tickets.stream()
                 .map(ticket -> new TicketSummaryDto(ticket.getId(), ticket.getTicketUid(), ticket.getTitle(), ticket.getStatus(), ticket.getCreatedAt()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -75,5 +77,22 @@ public class EngineerService {
 
         // Map the saved entity to our clean DTO before returning to prevent lazy loading errors.
         return ticketService.mapTicketToDetailDto(savedTicket);
+    }
+
+    private TicketDetailDto mapTicketToDetailDto(Ticket ticket) {
+        TicketDetailDto dto = new TicketDetailDto();
+        dto.setId(ticket.getId());
+        dto.setTicketUid(ticket.getTicketUid());
+        dto.setTitle(ticket.getTitle());
+        dto.setStatus(ticket.getStatus());
+        dto.setCategory(ticket.getCategory());
+        dto.setCreatedAt(ticket.getCreatedAt());
+        dto.setResolvedAt(ticket.getResolvedAt());
+
+        // Trigger the lazy load for the 'createdFor' user while the session is active.
+        AppUser createdForUser = ticket.getCreatedFor();
+        dto.setCreatedFor(new UserSummaryDto(createdForUser.getId(), createdForUser.getUsername(), createdForUser.getFullName()));
+
+        return dto;
     }
 }
