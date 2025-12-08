@@ -127,7 +127,7 @@ class TeamLeadServiceTest {
         when(userRepo.findByUsername(LEAD_USERNAME)).thenReturn(Optional.of(mockTeamLead));
         when(teamRepo.findByTeamLead(mockTeamLead)).thenReturn(Optional.of(mockTeam));
         when(ticketRepo.findById(ticketId)).thenReturn(Optional.of(mockTicket));
-        when(userRepo.findAllById(anyList())).thenReturn(List.of(mockMember));
+        when(userRepo.findAllById(any())).thenReturn(List.of(mockMember));
 
         when(ticketRepo.save(any(Ticket.class))).thenAnswer(i -> i.getArguments()[0]);
         when(ticketService.mapTicketToDetailDto(any(Ticket.class))).thenReturn(new TicketDetailDto());
@@ -174,7 +174,7 @@ class TeamLeadServiceTest {
         when(userRepo.findByUsername(LEAD_USERNAME)).thenReturn(Optional.of(mockTeamLead));
         when(teamRepo.findByTeamLead(mockTeamLead)).thenReturn(Optional.of(mockTeam));
         when(ticketRepo.findById(100L)).thenReturn(Optional.of(mockTicket));
-        when(userRepo.findAllById(anyList())).thenReturn(List.of(externalUser));
+        when(userRepo.findAllById(any())).thenReturn(List.of(externalUser));
 
         ReassignTicketDto dto = new ReassignTicketDto();
         dto.setNewAssigneeUserIds(Set.of(99L));

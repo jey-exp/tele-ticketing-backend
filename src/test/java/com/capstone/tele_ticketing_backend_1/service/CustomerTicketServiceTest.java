@@ -125,7 +125,7 @@ class CustomerTicketServiceTest {
         assertEquals(5, mockTicket.getFeedback().getRating());
 
         // Verify Log
-        verify(activityLogService).createLog(any(Ticket.class), eq(mockUser), eq(ActivityType.RESOLUTION), contains("Resolved"), eq(false));
+        verify(activityLogService).createLog(any(Ticket.class), eq(mockUser), eq(ActivityType.RESOLUTION), contains("resolved"), eq(false));
     }
 
     @Test

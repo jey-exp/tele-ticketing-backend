@@ -135,7 +135,7 @@ class TriageOfficerServiceTest {
 
         when(userRepo.findByUsername(TRIAGE_OFFICER_USERNAME)).thenReturn(Optional.of(mockTriageOfficer));
         when(ticketRepo.findById(100L)).thenReturn(Optional.of(mockTicket));
-        when(userRepo.findAllById(anyList())).thenReturn(Collections.emptyList()); // Return empty list
+        when(userRepo.findAllById(any())).thenReturn(Collections.emptyList()); // Return empty list
 
         // Act & Assert
         UserNotFoundException ex = assertThrows(UserNotFoundException.class, () ->

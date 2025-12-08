@@ -60,7 +60,7 @@ class ReportingServiceTest {
 
         // Verify date formatting logic (MMM dd)
         String expectedDateString = today.format(DateTimeFormatter.ofPattern("MMM dd"));
-        assertEquals(expectedDateString, result.get(0).getValue());
+        assertEquals(expectedDateString, result.get(0).getLabel());
 
         verify(ticketRepo).getTicketVolumeByDay(any(LocalDateTime.class));
     }
