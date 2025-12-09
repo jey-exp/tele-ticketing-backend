@@ -97,7 +97,12 @@ public class WebSecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		// Rule 1: Allow requests from your React app's origin.
-		configuration.setAllowedOrigins(List.of("http://localhost:8080", "https://*.vercel.app"));
+		configuration.setAllowedOriginPatterns(List.of(
+				"http://localhost:8080",
+				"https://*.vercel.app",
+				"https://tele-ticketing-frontend-h4ijhl4iz.vercel.app"
+		));
+
 
 		// Rule 2: Allow standard HTTP methods.
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
